@@ -51,6 +51,8 @@ bool MemoryMap(wchar_t WCFilePath[])
 			OutputDebugString(L"Close File Handle error");
 			return FALSE;
 		}
+		hFile=NULL;
+		
 		return FALSE;
 	}
 	//////////////////////////////////////////////////////////////////////////
@@ -59,16 +61,34 @@ bool MemoryMap(wchar_t WCFilePath[])
 	if (NULL==lpMapAddress)
 	{
 		OutputDebugString(L"File Mappint Error");
+		if(hMapFile != NULL)
+		{
+				if(!UnmapViewOfFile(hMapFile))
+				{
+					OutputDebugString(L"UnmapViewOfFile error");
+					return FALSE;
+				}	
+		
+		}
+		else
+		{
+			OutputDebugString(L"hMapFile == NULL error");
+		}
+		
 		if(!CloseHandle(hMapFile))
 		{
 			OutputDebugString(L"Close File Mapping Handle error");
 			return FALSE;
 		}
+		hMapFile = NULL;
+		
 		if (!CloseHandle(hFile))
 		{
 			OutputDebugString(L"Close File Handle error");
 			return FALSE;
 		}
+		hFile =NULL;
+		
 		return FALSE;
 	}
 	//DO some thing...
@@ -164,17 +184,42 @@ bool MemoryMap(wchar_t WCFilePath[])
 
 	//////////////////////////////////////////////////////////////////////////
 	//πÿ±’mappint∂‘œÛ
-	if(!CloseHandle(hMapFile))
+	
+	
+	if(hMapFile != NULL)
 	{
-		OutputDebugString(L"Close File Mapping Handle error");
-		return FALSE;
+		if(!UnmapViewOfFile(hMapFile))
+		{
+			OutputDebugString(L"UnmapViewOfFile error");
+			return FALSE;			
+		}
+		
+			if(!CloseHandle(hMapFile))
+		{
+			OutputDebugString(L"Close File Mapping Handle error");
+			return FALSE;
+		}
+		hMapFile = NULL;
+		
+		if(hFile !=NULL)
+		{
+			if (!CloseHandle(hFile))
+			{
+				OutputDebugString(L"Close File Handle error");
+				return FALSE;
+			}
+		}
+		else
+		{
+			OutputDebugString(L"hFile==NULL error");
+		}
+		hFile = NULL;
+		
 	}
-	if (!CloseHandle(hFile))
+	else
 	{
-		OutputDebugString(L"Close File Handle error");
+		OutputDebugString(L"hMapFile==NULL error");
 		return FALSE;
-	}
-
-	return 1;
+	}	
 
 }
